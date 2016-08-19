@@ -1,0 +1,30 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-listbox/paper-listbox.html">
+
+<dom-module id="miller-column">
+  <template>
+    <style>
+      :host {
+        flex-grow:0;
+
+        min-width:200px;
+        background-color: green;
+        border-left: 1px solid black;
+      }
+    </style>
+
+    <!--
+      TODO replace paper-listbox with iron-selector
+      to allow for custom styling and keyboard navigation
+    -->
+    <paper-listbox>
+      <content></content>
+    </paper-listbox>
+  </template>
+
+  <script>
+    Polymer({
+      is: 'miller-column'
+    });
+  </script>
+</dom-module>

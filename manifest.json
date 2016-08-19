@@ -1,0 +1,7 @@
+{
+  "name": "polymer-columns",
+  "short_name": "polymer-columns",
+  "description": "An experiment in implementing Miller columns in Polymer",
+  "start_url": "/",
+  "display": "standalone"
+}

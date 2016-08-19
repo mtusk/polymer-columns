@@ -1,0 +1,28 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+<dom-module id="miller-columns">
+  <template>
+    <style>
+      :host {
+        display: -webkit-box;
+        display: -moz-box;
+        display: -ms-flexbox;
+        display: -webkit-flex;
+        display: flex;
+        flex-flow:row;
+        height: 100%;
+        overflow-x: auto;
+
+        background-color: red;
+      }
+    </style>
+
+    <content></content>
+  </template>
+
+  <script>
+    Polymer({
+      is: 'miller-columns'
+    });
+  </script>
+</dom-module>

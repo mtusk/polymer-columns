@@ -1,0 +1,42 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+<link rel="import" href="../miller-columns/miller-columns.html">
+<link rel="import" href="../miller-column/miller-column.html">
+<link rel="import" href="../miller-column-item/miller-column-item.html">
+
+<dom-module id="polymer-columns-app">
+  <template>
+    <style is="custom-style">
+      :host {
+        display: block;
+        height: 100%;
+      }
+    </style>
+
+    <miller-columns>
+      <miller-column>
+        <miller-column-item>a</miller-column-item>
+        <miller-column-item>b</miller-column-item>
+        <miller-column-item>c</miller-column-item>
+        <miller-column-item>d</miller-column-item>
+        <miller-column-item>e</miller-column-item>
+        <miller-column-item>f</miller-column-item>
+      </miller-column>
+      <miller-column>
+        <miller-column-item>1</miller-column-item>
+        <miller-column-item>2</miller-column-item>
+        <miller-column-item>3</miller-column-item>
+        <miller-column-item>4</miller-column-item>
+        <miller-column-item>5</miller-column-item>
+        <miller-column-item>6</miller-column-item>
+      </miller-column>
+    </miller-columns>
+
+  </template>
+
+  <script>
+    Polymer({
+      is: 'polymer-columns-app'
+    });
+  </script>
+</dom-module>
