@@ -13,30 +13,51 @@
       }
     </style>
 
-    <miller-columns>
-      <miller-column>
-        <miller-column-item>a</miller-column-item>
-        <miller-column-item>b</miller-column-item>
-        <miller-column-item>c</miller-column-item>
-        <miller-column-item>d</miller-column-item>
-        <miller-column-item>e</miller-column-item>
-        <miller-column-item>f</miller-column-item>
-      </miller-column>
-      <miller-column>
-        <miller-column-item>1</miller-column-item>
-        <miller-column-item>2</miller-column-item>
-        <miller-column-item>3</miller-column-item>
-        <miller-column-item>4</miller-column-item>
-        <miller-column-item>5</miller-column-item>
-        <miller-column-item>6</miller-column-item>
-      </miller-column>
+    <miller-columns
+      columns="{{columns}}"
+      column1="{{column1}}"
+      column2="{{column2}}">
     </miller-columns>
 
   </template>
 
   <script>
     Polymer({
-      is: 'polymer-columns-app'
+      is: 'polymer-columns-app',
+
+      properties: {
+        columns: Array,
+        column1: Object,
+        column2: Object
+      },
+
+      ready: function() {
+        var column1 = {
+          header: 'Column 1',
+          items: [
+            'Item 1',
+            'Item 2',
+            'Item 3'
+          ]
+        };
+
+        var column2 = {
+          header: 'Column 2',
+          items: [
+            'Item A',
+            'Item B',
+            'Item C'
+          ]
+        };
+
+        this.column1 = column1;
+        this.column2 = column2;
+
+        this.columns = [
+          column1,
+          column2
+        ];
+      }
     });
   </script>
 </dom-module>

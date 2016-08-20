@@ -1,22 +1,66 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../../bower_components/iron-a11y-keys-behavior/iron-a11y-keys-behavior.html">
 
 <dom-module id="miller-column-item">
   <template>
-    <style>
+    <style is="custom-style">
       :host {
         display:block;
+
+        padding: 0.5em;
+      }
+
+      :host.iron-selected {
+        color: white;
+        background-color: var(--google-blue-500);
       }
     </style>
 
-    <paper-item>
-      <content></content>
-    </paper-item>
+    {{item}}
   </template>
 
   <script>
     Polymer({
-      is: 'miller-column-item'
+      is: 'miller-column-item',
+
+      behaviors: [
+        Polymer.IronA11yKeysBehavior
+      ],
+
+      hostAttributes: {
+        tabindex: 0
+      },
+
+      properties: {
+        item: Object,
+        columnId: Number,
+        keyEventTarget: {
+          type: Object,
+          value: function() {
+            return document.body;
+          }
+        }
+      },
+
+      keyBindings: {
+        'right enter': '_moveForward'
+      },
+
+      ready: function() {
+        var breakme = "here";
+      },
+
+      _moveForward: function(event) {
+        event.preventDefault();
+
+        var payload = {
+          item: this.item,
+          columnId: this.columnId // TODO for some reason the column id is always the first columns id... even for items in the second column... probably should inspect and verify the second columns columnid property is being set properly
+        };
+
+        this.fire('move-forward', payload);
+      }
     });
   </script>
 </dom-module>

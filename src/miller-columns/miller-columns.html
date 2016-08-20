@@ -13,16 +13,47 @@
         height: 100%;
         overflow-x: auto;
 
-        background-color: red;
+        /*background-color: red;*/
       }
     </style>
 
-    <content></content>
+    <!--<template
+      is="dom-repeat"
+      items="{{columns}}"
+      as="column"
+      index-as="columnIndex">
+      <miller-column
+        items="{{column.items}}"
+        column-id="123"
+        on-move-forward="moveForward">
+      </miller-column>
+    </template>-->
+
+    <miller-column
+      items="{{column1.items}}"
+      column-id="123"
+      on-move-forward="moveForward">
+    </miller-column>
+    <miller-column
+      items="{{column2.items}}"
+      column-id="456"
+      on-move-forward="moveForward">
+    </miller-column>
   </template>
 
   <script>
     Polymer({
-      is: 'miller-columns'
+      is: 'miller-columns',
+
+      properties: {
+        columns: Array,
+        column1: Object,
+        column2: Object
+      },
+
+      moveForward: function(event, details, sender) {
+        var breakme = "here";
+      }
     });
   </script>
 </dom-module>

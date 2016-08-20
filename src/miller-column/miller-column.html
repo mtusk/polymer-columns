@@ -1,5 +1,5 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
-<link rel="import" href="../../bower_components/paper-listbox/paper-listbox.html">
+<link rel="import" href="../../bower_components/iron-selector/iron-selector.html">
 
 <dom-module id="miller-column">
   <template>
@@ -8,23 +8,36 @@
         flex-grow:0;
 
         min-width:200px;
-        background-color: green;
+        /*background-color: green;*/
         border-left: 1px solid black;
       }
     </style>
 
-    <!--
-      TODO replace paper-listbox with iron-selector
-      to allow for custom styling and keyboard navigation
-    -->
-    <paper-listbox>
-      <content></content>
-    </paper-listbox>
+    <iron-selector>
+      <template
+        is="dom-repeat"
+        items="{{items}}"
+        as="item">
+        <miller-column-item
+          item="{{item}}"
+          column-id="{{columnId}}">
+        </miller-column-item>
+      </template>
+    </iron-selector>
   </template>
 
   <script>
     Polymer({
-      is: 'miller-column'
+      is: 'miller-column',
+
+      properties: {
+        items: Array,
+        columnId: Number
+      },
+
+      ready: function() {
+        var breakme = "here";
+      }
     });
   </script>
 </dom-module>
