@@ -32,7 +32,10 @@
 
       properties: {
         items: Array,
-        columnId: Number
+        columnId: {
+          type: Number,
+          reflectToAttribute: true
+        }
       },
 
       ready: function() {

@@ -34,13 +34,7 @@
 
       properties: {
         item: Object,
-        columnId: Number,
-        keyEventTarget: {
-          type: Object,
-          value: function() {
-            return document.body;
-          }
-        }
+        columnId: Number
       },
 
       keyBindings: {
@@ -56,7 +50,7 @@
 
         var payload = {
           item: this.item,
-          columnId: this.columnId // TODO for some reason the column id is always the first columns id... even for items in the second column... probably should inspect and verify the second columns columnid property is being set properly
+          columnId: this.columnId
         };
 
         this.fire('move-forward', payload);

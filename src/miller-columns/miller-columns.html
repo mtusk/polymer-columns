@@ -17,28 +17,18 @@
       }
     </style>
 
-    <!--<template
+    <template
       is="dom-repeat"
       items="{{columns}}"
       as="column"
       index-as="columnIndex">
       <miller-column
         items="{{column.items}}"
-        column-id="123"
+        column-id="{{columnIndex}}"
         on-move-forward="moveForward">
       </miller-column>
-    </template>-->
+    </template>
 
-    <miller-column
-      items="{{column1.items}}"
-      column-id="123"
-      on-move-forward="moveForward">
-    </miller-column>
-    <miller-column
-      items="{{column2.items}}"
-      column-id="456"
-      on-move-forward="moveForward">
-    </miller-column>
   </template>
 
   <script>
@@ -46,13 +36,19 @@
       is: 'miller-columns',
 
       properties: {
-        columns: Array,
-        column1: Object,
-        column2: Object
+        columns: Array
       },
 
       moveForward: function(event, details, sender) {
-        var breakme = "here";
+        var sourceColumnId = details.columnId;
+        var sourceColumn = this.columns[details.columnId];
+
+        var targetColumnId = sourceColumnId + 1;
+        var targetColumn = this.columns.length > targetColumnId ? this.columns[targetColumnId] : null;
+
+        if (!!targetColumn) {
+
+        }
       }
     });
   </script>
