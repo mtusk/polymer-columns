@@ -1,9 +1,14 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/iron-selector/iron-selector.html">
 
 <dom-module id="miller-columns">
   <template>
     <style>
       :host {
+        overflow-x: auto;
+      }
+
+      #selector {
         display: -webkit-box;
         display: -moz-box;
         display: -ms-flexbox;
@@ -11,23 +16,25 @@
         display: flex;
         flex-flow:row;
         height: 100%;
-        overflow-x: auto;
-
-        /*background-color: red;*/
       }
     </style>
 
-    <template
-      is="dom-repeat"
-      items="{{columns}}"
-      as="column"
-      index-as="columnIndex">
-      <miller-column
-        items="{{column.items}}"
-        column-id="{{columnIndex}}"
-        on-move-forward="moveForward">
-      </miller-column>
-    </template>
+    <iron-selector
+      id="selector"
+      selected="{{selected}}"
+      on-iron-items-changed="selectorItemsChanged">
+      <template
+        is="dom-repeat"
+        items="{{columns}}"
+        as="column"
+        index-as="columnIndex">
+        <miller-column
+          items="{{column.items}}"
+          column-id="{{columnIndex}}"
+          on-move-left-right="moveLeftRight">
+        </miller-column>
+      </template>
+    </iron-selector>
 
   </template>
 
@@ -36,19 +43,23 @@
       is: 'miller-columns',
 
       properties: {
-        columns: Array
+        columns: Array,
+        selected: Number
       },
 
-      moveForward: function(event, details, sender) {
-        var sourceColumnId = details.columnId;
-        var sourceColumn = this.columns[details.columnId];
-
-        var targetColumnId = sourceColumnId + 1;
-        var targetColumn = this.columns.length > targetColumnId ? this.columns[targetColumnId] : null;
-
-        if (!!targetColumn) {
-
+      moveLeftRight: function(event, details, sender) {
+        if (details.direction === 'Left') {
+          this.$.selector.selectPrevious();
+        } else {
+          this.$.selector.selectNext();
         }
+
+        this.$.selector.selectedItem.focus();
+      },
+
+      selectorItemsChanged: function() {
+        this.$.selector.select(0);
+        this.$.selector.selectedItem.focus();
       }
     });
   </script>

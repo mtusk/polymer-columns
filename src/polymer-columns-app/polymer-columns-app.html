@@ -13,10 +13,7 @@
       }
     </style>
 
-    <miller-columns
-      columns="{{columns}}"
-      column1="{{column1}}"
-      column2="{{column2}}">
+    <miller-columns columns="{{columns}}">
     </miller-columns>
 
   </template>
@@ -26,9 +23,7 @@
       is: 'polymer-columns-app',
 
       properties: {
-        columns: Array,
-        column1: Object,
-        column2: Object
+        columns: Array
       },
 
       ready: function() {
@@ -49,9 +44,6 @@
             'Item C'
           ]
         };
-
-        this.column1 = column1;
-        this.column2 = column2;
 
         this.columns = [
           column1,

@@ -15,6 +15,10 @@
         color: white;
         background-color: var(--google-blue-500);
       }
+
+      :host:focus {
+        background-color: var(--google-red-500);
+      }
     </style>
 
     {{item}}
@@ -34,26 +38,44 @@
 
       properties: {
         item: Object,
-        columnId: Number
+        columnId: Number,
+        itemId: {
+          type: Number,
+          reflectToAttribute: true
+        }
       },
 
       keyBindings: {
-        'right enter': '_moveForward'
+        'left right enter': '_moveLeftRight',
+        'up down': '_moveUpDown'
       },
 
       ready: function() {
         var breakme = "here";
       },
 
-      _moveForward: function(event) {
+      _moveLeftRight: function(event) {
         event.preventDefault();
 
         var payload = {
           item: this.item,
-          columnId: this.columnId
+          columnId: this.columnId,
+          direction: event.detail.keyboardEvent.key === 'ArrowLeft' ? 'Left' : 'Right'
         };
 
-        this.fire('move-forward', payload);
+        this.fire('move-left-right', payload);
+      },
+
+      _moveUpDown: function(event, a, b, c, d, e) {
+        event.preventDefault();
+
+        var payload = {
+          item: this.item,
+          columnId: this.columnId,
+          direction: event.detail.keyboardEvent.key === 'ArrowUp' ? 'Up' : 'Down'
+        };
+
+        this.fire('move-up-down', payload);
       }
     });
   </script>
