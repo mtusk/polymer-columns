@@ -21,7 +21,6 @@
 
     <iron-selector
       id="selector"
-      selected="{{selected}}"
       on-iron-items-changed="selectorItemsChanged">
       <template
         is="dom-repeat"
@@ -43,23 +42,54 @@
       is: 'miller-columns',
 
       properties: {
-        columns: Array,
-        selected: Number
+        configuration: Object,
+        columns: {
+          type: Array,
+          notify: true
+        }
       },
 
-      moveLeftRight: function(event, details, sender) {
-        if (details.direction === 'Left') {
-          this.$.selector.selectPrevious();
-        } else {
-          this.$.selector.selectNext();
+      ready: function() {
+        if (!this.configuration) {
+          throw "'configuration' must be on <miller-columns>";
         }
 
-        this.$.selector.selectedItem.focus();
+        if (!this.configuration.getColumn) {
+          throw "'configuration.getColumn' must be defined";
+        }
+
+        var column = this.configuration.getColumn([]);
+
+        this.columns = [column];
+      },
+
+      moveLeftRight: function(event, payload, sender) {
+        if (payload.direction === 'Left') {
+          if (this.$.selector.selected > 0) {
+            this.$.selector.selectPrevious();
+            this.splice('columns', this.columns.length - 1, 1);
+            this.$.selector.selectedItem.focus();
+          }
+        } else {
+          var sourcePathTokens = ['TODO', 'TODO'];
+          var column = this.configuration.getColumn(sourcePathTokens);
+          this.push('columns', column);
+          this.async(function() {
+            this.$.selector.selectNext();
+            this.$.selector.selectedItem.focus();
+          }, 50);
+        }
       },
 
       selectorItemsChanged: function() {
-        this.$.selector.select(0);
-        this.$.selector.selectedItem.focus();
+        if (!this.initialFocusSet) {
+          this.$.selector.select(0);
+
+          if (!!this.$.selector.selectedItem) {
+            this.initialFocusSet = true;
+            this.$.selector.selectedItem.focus();
+          }
+        }
       }
     });
   </script>

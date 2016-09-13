@@ -13,8 +13,7 @@
       }
     </style>
 
-    <miller-columns columns="{{columns}}">
-    </miller-columns>
+    <miller-columns configuration="{{millerColumnsConfigration}}"></miller-columns>
 
   </template>
 
@@ -23,33 +22,33 @@
       is: 'polymer-columns-app',
 
       properties: {
-        columns: Array
-      },
+        millerColumnsConfigration: {
+          type: Object,
+          value: {
+            getColumn: function(sourcePathTokens) {
+              // TODO
+              // the miller-columns component will invoke this when
+              // a column is needed (probably when the user selects a column item)
+              // this method should return a column object for the
+              // component to add to it's list of columns
 
-      ready: function() {
-        var column1 = {
-          header: 'Column 1',
-          items: [
-            'Item 1',
-            'Item 2',
-            'Item 3'
-          ]
-        };
+              var column = {
+                name: _.join(sourcePathTokens, '/'),
+                items: [
+                  { name: 'a' },
+                  { name: 'b' },
+                  { name: 'c' },
+                  { name: 'd' },
+                  { name: 'e' }
+                ]
+              };
 
-        var column2 = {
-          header: 'Column 2',
-          items: [
-            'Item A',
-            'Item B',
-            'Item C'
-          ]
-        };
-
-        this.columns = [
-          column1,
-          column2
-        ];
+              return column;
+            }
+          }
+        }
       }
+
     });
   </script>
 </dom-module>
