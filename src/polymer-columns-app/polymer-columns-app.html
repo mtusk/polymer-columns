@@ -22,25 +22,38 @@
       is: 'polymer-columns-app',
 
       properties: {
+        firstColumn: {
+          type: Object,
+          value: {
+            name: 'Home',
+          }
+        },
         millerColumnsConfigration: {
           type: Object,
           value: {
-            getColumn: function(sourcePathTokens) {
+            getColumn: function() {
               // TODO
               // the miller-columns component will invoke this when
               // a column is needed (probably when the user selects a column item)
               // this method should return a column object for the
               // component to add to it's list of columns
 
+              var randomName = Math.floor(Math.random() * (100 - 10)) + 10;
+              var randomItemCount = Math.floor(Math.random() * (6 - 1)) + 6;
+              var randomItems = _
+                .chain(_.range(randomItemCount))
+                .map(function(i) {
+                  var item = {
+                    name: randomName + '-' + i
+                  };
+
+                  return item;
+                })
+                .value();
+
               var column = {
-                name: _.join(sourcePathTokens, '/'),
-                items: [
-                  { name: 'a' },
-                  { name: 'b' },
-                  { name: 'c' },
-                  { name: 'd' },
-                  { name: 'e' }
-                ]
+                name: randomName,
+                items: randomItems
               };
 
               return column;

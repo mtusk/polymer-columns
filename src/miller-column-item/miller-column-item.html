@@ -21,7 +21,7 @@
       }
     </style>
 
-    {{item}}
+    {{item.name}}
   </template>
 
   <script>
@@ -37,12 +37,7 @@
       },
 
       properties: {
-        item: Object,
-        columnId: Number,
-        itemId: {
-          type: Number,
-          reflectToAttribute: true
-        }
+        item: Object
       },
 
       keyBindings: {
@@ -59,19 +54,17 @@
 
         var payload = {
           item: this.item,
-          columnId: this.columnId,
           direction: event.detail.keyboardEvent.key === 'ArrowLeft' ? 'Left' : 'Right'
         };
 
         this.fire('move-left-right', payload);
       },
 
-      _moveUpDown: function(event, a, b, c, d, e) {
+      _moveUpDown: function(event) {
         event.preventDefault();
 
         var payload = {
           item: this.item,
-          columnId: this.columnId,
           direction: event.detail.keyboardEvent.key === 'ArrowUp' ? 'Up' : 'Down'
         };
 

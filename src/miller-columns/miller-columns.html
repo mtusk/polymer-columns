@@ -21,15 +21,15 @@
 
     <iron-selector
       id="selector"
-      on-iron-items-changed="selectorItemsChanged">
+      selected-item="{{selectedColumn}}"
+      on-iron-items-changed="selectorItemsChanged"
+      on-iron-activate="columnSelected">
       <template
         is="dom-repeat"
         items="{{columns}}"
-        as="column"
-        index-as="columnIndex">
+        as="column">
         <miller-column
           items="{{column.items}}"
-          column-id="{{columnIndex}}"
           on-move-left-right="moveLeftRight">
         </miller-column>
       </template>
@@ -43,9 +43,14 @@
 
       properties: {
         configuration: Object,
+        selectedColumn: Object,
         columns: {
           type: Array,
           notify: true
+        },
+        path: {
+          type: String,
+          reflectToAttribute: true
         }
       },
 
@@ -64,6 +69,9 @@
       },
 
       moveLeftRight: function(event, payload, sender) {
+        // console.log('about to change selected column')
+        // console.log('selected column prior to any change:', this.$.selector.selectedItem);
+
         if (payload.direction === 'Left') {
           if (this.$.selector.selected > 0) {
             this.$.selector.selectPrevious();
@@ -71,8 +79,7 @@
             this.$.selector.selectedItem.focus();
           }
         } else {
-          var sourcePathTokens = ['TODO', 'TODO'];
-          var column = this.configuration.getColumn(sourcePathTokens);
+          var column = this.configuration.getColumn();
           this.push('columns', column);
           this.async(function() {
             this.$.selector.selectNext();
@@ -90,6 +97,26 @@
             this.$.selector.selectedItem.focus();
           }
         }
+      },
+
+      columnSelected: function(event, columnToBeSelected) {
+        // TODO for some reason this method is being triggered when an item is selected
+        // as well as when a column is selected... is there a way to detect what type
+        // of change we are handling or prevent items from triggering this????
+
+
+
+        //console.log('column selected', this.$.selector.selectedItem);
+
+        var selectedColumnIndex = this.$.selector.selected;
+
+        this.path = _
+          .chain(this.$.selector.items)
+          .take(selectedColumnIndex + 1)
+          .map('selectedItem')
+          .map('name')
+          .join('/')
+          .value();
       }
     });
   </script>

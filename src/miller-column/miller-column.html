@@ -13,15 +13,16 @@
       }
     </style>
 
-    <iron-selector id="selector" selected="{{selected}}">
+    <iron-selector
+      id="selector"
+      selected-item="{{selectedItem}}"
+      on-iron-activate="itemSelected">
       <template
         is="dom-repeat"
         items="{{items}}"
-        as="item"
-        index-as="itemIndex">
+        as="item">
         <miller-column-item
           item="{{item}}"
-          item-id="{{itemIndex}}"
           column-id="{{columnId}}"
           on-move-up-down="moveUpDown">
         </miller-column-item>
@@ -35,11 +36,7 @@
 
       properties: {
         items: Array,
-        selected: Number,
-        columnId: {
-          type: Number,
-          reflectToAttribute: true
-        }
+        selectedItem: Object
       },
 
       ready: function() {
@@ -47,15 +44,12 @@
       },
 
       focus: function() {
-        if (!this.selected) {
+        if (!this.$.selector.selected) {
           this.$.selector.select(0);
         }
 
-        var selector = 'miller-column-item[item-id="' + this.selected + '"]';
-        var millerColumnItem = this.$$(selector);
-
-        if (!!millerColumnItem) {
-          millerColumnItem.focus();
+        if (this.$.selector.selectedItem) {
+          this.$.selector.selectedItem.focus();
         }
       },
 
@@ -67,6 +61,10 @@
         }
 
         this.$.selector.selectedItem.focus();
+      },
+
+      itemSelected: function(event, itemToBeSelected) {
+        //console.log('item selected', this.$.selector.selectedItem);
       }
     });
   </script>
