@@ -22,15 +22,15 @@
     <iron-selector
       id="selector"
       selected-item="{{selectedColumn}}"
-      on-iron-items-changed="selectorItemsChanged"
-      on-iron-activate="columnSelected">
+      on-iron-items-changed="selectorItemsChanged">
       <template
         is="dom-repeat"
         items="{{columns}}"
         as="column">
         <miller-column
           items="{{column.items}}"
-          on-move-left-right="moveLeftRight">
+          on-move-left-right="moveLeftRight"
+          on-iron-select="itemSelected">
         </miller-column>
       </template>
     </iron-selector>
@@ -52,6 +52,10 @@
           type: String,
           reflectToAttribute: true
         }
+      },
+
+      listeners: {
+        'ironActivate': 'itemSelected'
       },
 
       ready: function() {
@@ -97,26 +101,29 @@
             this.$.selector.selectedItem.focus();
           }
         }
+
+        this.updatePath();
       },
 
-      columnSelected: function(event, columnToBeSelected) {
-        // TODO for some reason this method is being triggered when an item is selected
-        // as well as when a column is selected... is there a way to detect what type
-        // of change we are handling or prevent items from triggering this????
+      itemSelected: function(event, item) {
+        var millerColumns = this.$.selector.items;
+        var millerColumnContainingItemThatWasSelected = event.currentTarget;
+        var indexOfMillerColumnContainingItemThatWasSelected = _.indexOf(millerColumns, millerColumnContainingItemThatWasSelected);
 
+        // delete all columns after the column containing the item that was selected
+        this.splice('columns', indexOfMillerColumnContainingItemThatWasSelected + 1);
 
+        this.updatePath();
+      },
 
-        //console.log('column selected', this.$.selector.selectedItem);
-
-        var selectedColumnIndex = this.$.selector.selected;
-
-        this.path = _
+      updatePath: function() {
+        var path = _
           .chain(this.$.selector.items)
-          .take(selectedColumnIndex + 1)
-          .map('selectedItem')
-          .map('name')
+          .map('selectedItem.item.name')
           .join('/')
           .value();
+
+        this.path = '/' + path;
       }
     });
   </script>
