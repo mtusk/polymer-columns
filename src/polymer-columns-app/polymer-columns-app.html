@@ -3,6 +3,7 @@
 <link rel="import" href="../miller-columns/miller-columns.html">
 <link rel="import" href="../miller-column/miller-column.html">
 <link rel="import" href="../miller-column-item/miller-column-item.html">
+<link rel="import" href="../browser-history/browser-history.html">
 
 <dom-module id="polymer-columns-app">
   <template>
@@ -13,7 +14,13 @@
       }
     </style>
 
-    <miller-columns configuration="{{millerColumnsConfigration}}"></miller-columns>
+    <browser-history path="{{path}}"></browser-history>
+
+    <!-- this template is used to delay creation of miller-columns until we have initialized millerColumnsConfigration -->
+    <template is="dom-if" if="{{millerColumnsConfigration}}">
+      <miller-columns configuration="{{millerColumnsConfigration}}" path="{{path}}"></miller-columns>
+    </template>
+
 
   </template>
 
@@ -22,46 +29,78 @@
       is: 'polymer-columns-app',
 
       properties: {
-        firstColumn: {
-          type: Object,
-          value: {
-            name: 'Home',
-          }
+        path: {
+          type: String,
+          notify: true,
+          observer: '_pathChanged'
         },
-        millerColumnsConfigration: {
-          type: Object,
-          value: {
-            getColumn: function() {
-              // TODO
-              // the miller-columns component will invoke this when
-              // a column is needed (probably when the user selects a column item)
-              // this method should return a column object for the
-              // component to add to it's list of columns
+        millerColumnsConfigration: Object
+      },
 
-              var randomName = Math.floor(Math.random() * (100 - 10)) + 10;
-              var randomItemCount = Math.floor(Math.random() * (6 - 1)) + 6;
-              var randomItems = _
-                .chain(_.range(randomItemCount))
-                .map(function(i) {
-                  var item = {
-                    name: randomName + '-' + i
-                  };
+      ready: function() {
+        this.millerColumnsConfigration = {
+          getColumn: this.getColumn,
+          context: this
+        };
+      },
 
-                  return item;
-                })
-                .value();
+      getColumn: function(pathOfColumnToGet) {
+        var column = null;
 
-              var column = {
-                name: randomName,
-                items: randomItems
-              };
-
-              return column;
-            }
-          }
+        if (!pathOfColumnToGet) {
+          column = {
+            name: 'Pets',
+            items: [
+              { name: 'Dogs' },
+              { name: 'Cats' },
+              { name: 'Pigs' }
+            ]
+          };
+        } else if (pathOfColumnToGet.endsWith('Dogs')) {
+          column = {
+            name: 'Dogs',
+            items: [
+              { name: 'Golden Retriever' },
+              { name: 'Labrador Retriever' },
+              { name: 'Shih Tzu' },
+              { name: 'St. Bernard' },
+              { name: 'Chihuaha' },
+              { name: 'Great Dane' }
+            ]
+          };
+        } else if (pathOfColumnToGet.endsWith('Golden Retriever')) {
+          column = {
+            name: 'Golden Retrievers',
+            items: [
+              { name: 'Frodo' },
+              { name: 'Sam' }
+            ]
+          };
+        } else if (pathOfColumnToGet.endsWith('Cats')) {
+            column = {
+              name: 'Cats',
+              items: [
+                { name: 'Siameze' },
+                { name: 'Black' }
+              ]
+            };
+        } else if (pathOfColumnToGet.endsWith('Pigs')) {
+            column = {
+              name: 'Pigs',
+              items: [
+                { name: 'Pork' },
+                { name: 'Bacon' },
+                { name: 'Ham' }
+              ]
+            };
         }
-      }
 
+        return column;
+      },
+
+      _pathChanged: function(newValue, oldValue) {
+        var breakme = "here";
+      }
     });
   </script>
 </dom-module>

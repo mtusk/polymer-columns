@@ -44,13 +44,16 @@
       properties: {
         configuration: Object,
         selectedColumn: Object,
+        isNavigating: Boolean,
         columns: {
           type: Array,
           notify: true
         },
         path: {
           type: String,
-          reflectToAttribute: true
+          notify: true,
+          reflectToAttribute: true,
+          observer: '_pathChanged'
         }
       },
 
@@ -63,28 +66,22 @@
           throw "'configuration.getColumn' must be defined";
         }
 
-        var column = this.configuration.getColumn([]);
+        var column = this.configuration.getColumn.call(this.configuration.context);
 
         this.columns = [column];
       },
 
       moveLeftRight: function(event, payload, sender) {
-        // console.log('about to change selected column')
-        // console.log('selected column prior to any change:', this.$.selector.selectedItem);
-
         if (payload.direction === 'Left') {
           if (this.$.selector.selected > 0) {
             this.$.selector.selectPrevious();
             this.splice('columns', this.columns.length - 1, 1);
             this.$.selector.selectedItem.focus();
+
+            this.async(this._updatePath, 1);
           }
         } else {
-          var column = this.configuration.getColumn();
-          this.push('columns', column);
-          this.async(function() {
-            this.$.selector.selectNext();
-            this.$.selector.selectedItem.focus();
-          }, 50);
+          this._getAndAddColumnAsync();
         }
       },
 
@@ -95,10 +92,10 @@
           if (!!this.$.selector.selectedItem) {
             this.initialFocusSet = true;
             this.$.selector.selectedItem.focus();
+
+            this._updatePath();
           }
         }
-
-        this.updatePath();
       },
 
       itemSelected: function(event, item) {
@@ -109,33 +106,135 @@
         // delete all columns after the column containing the item that was selected
         this.splice('columns', indexOfMillerColumnContainingItemThatWasSelected + 1);
 
-        this.updatePath();
+        this.async(this._updatePath, 50);
       },
 
-      updatePath: function() {
+      _updatePath: function() {
+        this.path = this._getCurrentPath();
+      },
+
+      _getCurrentPath: function() {
+        var root = this._getRootPath();
+
         var path = _
           .chain(this.$.selector.items)
           .map('selectedItem.item.name')
           .join('/')
           .value();
 
-        this.path = '/' + path;
+        return root + '/' + path;
+      },
+
+      _getRootPath: function() {
+        var root = '/';
+
+        if (this.columns && this.columns.length > 0) {
+          var rootColumn = _.head(this.columns);
+          root = root + rootColumn.name;
+        }
+
+        return root;
+      },
+
+      _pathChanged: function(newValue, oldValue) {
+        if (newValue !== oldValue) {
+          var changeOriginatedFromThisClass = this._getCurrentPath() === newValue;
+          if (!changeOriginatedFromThisClass && !this.isNavigating) {
+
+            if (!newValue || newValue.length <= 0) {
+              throw 'Path changed to an invalid value: ' + newValue + '. Unable to navigate.';
+            } else {
+              this._navigate();
+            }
+          }
+        }
+      },
+
+      _navigate: function() {
+        this.isNavigating = true;
+
+        var columnNames = _.drop(this.path.split('/'), 1);
+        var that = this;
+
+        // Remove all columns except the first (root) column
+        this.splice('columns', 1);
+
+        return this
+          ._delayAsync() // removing columns from the selector is async so wait a little
+          .then(function() {
+            this.path = this._getRootPath();
+          })
+          .then(function() {
+            // TODO gah, I'm getting lost... I think I need a better data structure to simlify this... perhaps a tree?
+            // perhaps there's a library out there to help with tree traversals?
+
+
+
+
+            return that._buildRemainingColumnsFromNavigationPathAsync.call(that, columnNames);
+          })
+          .then(function() {
+            that.isNavigating = false;
+          });
+      },
+
+      _buildRemainingColumnsFromNavigationPathAsync: function(columnNames) {
+        var promise = Promise.resolve();
+        var that = this;
+
+        for (var i = 1; i < columnNames.length; i++) { // can't use lodash since it changes the meaning of "this"
+          var columnName = columnNames[i];
+
+          // Find the item to select
+          var column = _.last(this.columns);
+          var itemIndex = _.findIndex(column.items, { 'name': columnName });
+
+          if (itemIndex >= 0) {
+            // Select the item in the rightmost column
+            var millerColumn = _.last(this.$.selector.items);
+            millerColumn.$.selector.select(itemIndex);
+
+            // Update the path to include the selected item
+            this._updatePath();
+
+            // Get a new column for the new path
+            promise = promise.then(function() {
+              return that._getAndAddColumnAsync.call(that);
+            });
+          }
+        }
+
+        return promise;
+      },
+
+      _getAndAddColumnAsync: function() {
+        var promise = Promise.resolve();
+        var column = this.configuration.getColumn.call(this.configuration.context, this.path);
+        var that = this;
+
+        if (column) {
+          this.push('columns', column);
+
+          promise = this
+            ._delayAsync(50)
+            .then(function() {
+              that.$.selector.selectNext();
+              that.$.selector.selectedItem.focus();
+            });
+        }
+
+        return promise;
+      },
+
+      _delayAsync: function(duration) {
+        var promise = new Promise(function(resolve, reject) {
+          setTimeout(function() {
+            resolve();
+          }, duration);
+        });
+
+        return promise;
       }
     });
   </script>
 </dom-module>
-
-
-
-<!--
-TODO perhaps utilize router5 http://router5.github.io/
-for routing since I don't want a page router... just some
-low-level thing I can listen to route changes with
-
-check out the browser plugin to update the browser's url on state changes
-
-... idk I might just need to implement this manually
-I don't see any mention in router5 about doing something like:
-/column1/column2/../columnN
-https://developer.mozilla.org/en-US/docs/Web/API/History_API
--->

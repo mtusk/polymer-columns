@@ -1,0 +1,45 @@
+<script>
+  'use strict';
+
+  Polymer({
+
+    is: 'browser-history',
+
+    properties: {
+      path: {
+        type: String,
+        notify: true,
+        observer: '_pathChanged'
+      }
+    },
+
+    ready: function() {
+      window.addEventListener('popstate', this);
+    },
+
+    handleEvent: function(event) {
+      switch(event.type) {
+        case 'popstate':
+          this._onPopState(event);
+          break;
+      }
+    },
+
+    _onPopState: function(event) {
+      if (event && event.state) {
+        this.path = event.state.path;
+      }
+    },
+
+    _pathChanged: function(newValue, oldValue) {
+      var path = newValue;
+      var state = { path: path };
+      var title = 'polymer-columns: ' + path;
+      history.pushState(state, title, path);
+
+      // TODO probably not best practice below, but pushState doesn't seem to update the page title:
+      document.title = title;
+    }
+
+  });
+</script>
